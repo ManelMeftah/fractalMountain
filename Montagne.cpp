@@ -1,4 +1,4 @@
-#include "montagne.h" 
+#include "Montagne.h" 
 
 using namespace std;
 
@@ -11,7 +11,7 @@ using namespace std;
  *
  *   @param unSteps : puissance de 2 -> longeur = largeur =
  *  (2^unSteps+1)
- *   @param fVariability : controle de la variabilité de la hauteur
+ *   @param fVariability : controle de la variabilitï¿½ de la hauteur
  *   @param fSpacing : espace entre 2 points
  */
 Montagne::Montagne(unsigned int unSteps, float fVariability,
@@ -51,7 +51,7 @@ float Montagne::Randomize()
 
 /**
  *   Allocation de la memoire necessaire pour contenir la
- *  matrice representant les ordonnées
+ *  matrice representant les ordonnï¿½es
  *
  */
 void Montagne::Init()

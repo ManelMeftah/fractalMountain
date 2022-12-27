@@ -3,7 +3,7 @@ CFLAGS=-Wall -I/urs/local/include
 CFLAGS=
 LDFLAGS= -lGL -lGLEW -lGLU -lglut  -lm  -llapack -lblas
 
-SRC=Montagne.cpp Interface.cpp fractale.cpp
+SRC=$(wildcard *.cpp)
 DEBUBFLAG=-g
 
 OBJ= $(SRC:.cpp=.o)

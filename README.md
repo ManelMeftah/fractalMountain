@@ -2,4 +2,8 @@
 
 Compilation:
 
-make -f Makefile
+**make**
+
+Exécution
+
+**./main**
