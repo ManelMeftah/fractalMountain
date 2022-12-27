@@ -31,10 +31,17 @@ void Interface::paint()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    //gluLookAt(0.0 + m_fTX + m_fRX, 24.0 + m_fTY + m_fRY, 40.0 + m_fTZ + m_fRZ,  // position de la caméra
+    //    0.0 + m_fTX, 24.0 + m_fTY, 0.0 + m_fTZ,  // point vers lequel la caméra regarde
+    //    0.0, 1.0, 0.0);  // vecteur "up"
 
-    gluLookAt(0.0 + m_fTX + m_fRX, 24.0 + m_fTY + m_fRY, 20.0 + m_fTZ + m_fRZ,
+    gluLookAt(0.0 + m_fTX + m_fRX, 100.0 + m_fTY + m_fRY, 0.0 + m_fTZ + m_fRZ,  // position de la caméra
+        50.0 + m_fTX, 0.0 + m_fTY, 50.0 + m_fTZ,  // point vers lequel la caméra regarde
+        0.0, 1.0, 0.0);  // vecteur "up"
+
+   /* gluLookAt(0.0 + m_fTX + m_fRX, 24.0 + m_fTY + m_fRY, 20.0 + m_fTZ + m_fRZ,
         0.0 + m_fTX, 24.0 + m_fTY, 0.0 + m_fTZ,
-        0.0, 1.0, 0.0);
+        0.0, 1.0, 0.0);*/
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -67,9 +74,15 @@ void Interface::resizeGL(int w, int h)
     glViewport(0, 0, (GLint)w, (GLint)h);
 }
 
-void Interface::changeMode()
+void Interface::changeModeF()
 {
-    pEngine->ChangeMode();
+    pEngine->ChangeModeFilled();
+    glutPostRedisplay();
+}
+
+void Interface::changeModeL()
+{
+    pEngine->ChangeModeLines();
     glutPostRedisplay();
 }
 
@@ -146,10 +159,15 @@ void Interface::translatePlusZSlot()
 }
 
 void Interface::upVariance()
-{
+{/*
     float variance = pEngine->getVariance();
     variance++;
-    generate(pEngine->getSize(), variance, pEngine->getSpacing());
+    generate(pEngine->getSize(), variance, pEngine->getSpacing());*/
+
+    getMontagne()->setVariance(pEngine->getVariance() + 0.1f);
+    pEngine->Generate();
+    paint();
+    //glutPostRedisplay();
 }
 
 void Interface::generate(unsigned int unPower, float fVariability,
@@ -161,3 +179,10 @@ void Interface::generate(unsigned int unPower, float fVariability,
     pEngine->Generate();
     glutPostRedisplay();
 }
+
+Montagne* Interface::getMontagne()
+{
+    return pEngine;
+}
+
+

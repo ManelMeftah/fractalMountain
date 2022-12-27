@@ -33,7 +33,8 @@ public:
     virtual void translatePlusZSlot();
 
     // Mode
-    virtual void changeMode();
+    virtual void changeModeF();
+    virtual void changeModeL();
 
 private:
     Montagne* pEngine;
@@ -45,4 +46,7 @@ public:
 public:
     void upVariance();
     void generate(unsigned int unPower, float fVariability, float fSize);
+
+    Montagne* getMontagne();
+
 };

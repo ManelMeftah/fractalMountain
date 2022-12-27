@@ -115,15 +115,26 @@ void initOpenGl()
     // glEnable(GL_DEPTH_TEST);
     glEnable(GL_COLOR_MATERIAL);
 
+    // Configurez la projection en perspective ici
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (GLfloat)200 / (GLfloat)200, 0.1f, 100.0f);
+    gluPerspective(30.0f, (GLfloat)200 / (GLfloat)200, 0.1f, 100.0f);
+
+    // Configurez la vue de la caméra ici
     glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();	
-//	glScalef(.7,.7,.7);
-    gluLookAt(0., 0., 4., 0., 0., 0., 0., 1., 0.);
-    //  glTranslatef(0.0,0.0,-5.0);
+    glLoadIdentity();
+    gluLookAt(0.0, 50.0, 50.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
+
+//    glMatrixMode(GL_PROJECTION);
+//    glLoadIdentity();
+//    gluPerspective(45.0f, (GLfloat)200 / (GLfloat)200, 0.1f, 100.0f);
+//    glMatrixMode(GL_MODELVIEW);
+//    //glLoadIdentity();	
+////	glScalef(.7,.7,.7);
+//    gluLookAt(0., 0., 4., 0., 0., 0., 0., 1., 0.);
+//    //  glTranslatef(0.0,0.0,-5.0);
+//}
 
 //------------------------------------------------------
 void display(void)
@@ -223,14 +234,14 @@ void clavier(unsigned char touche, int x, int y)
     {
     case '+':
         interface->upVariance();
-        //glutPostRedisplay();
+        glutPostRedisplay();
         break;
     case '-':
         glutPostRedisplay();
         break;
     case 'f': //* affichage en mode fil de fer 
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        interface->changeMode();
+        interface->changeModeF();
         glutPostRedisplay();
         break;
     case 'p': //* affichage du carre plein 
@@ -241,8 +252,12 @@ void clavier(unsigned char touche, int x, int y)
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
         glutPostRedisplay();
         break;
+    case 'l':
+        interface->changeModeL();
+        break;
     case 'q': //*la touche 'q' permet de quitter le programme 
         exit(0);
+
     }
 
 }

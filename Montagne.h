@@ -23,6 +23,7 @@ private:
 	bool m_bFilled; /**< Booleen permettant de passer du mode
 					 * filaire en mode "rempli"
 					 */
+	bool m_bShowLines;
 
 					 // Destruction / Construction
 public:
@@ -38,7 +39,7 @@ private:
 		unsigned int unHalfSpacing);
 	float SquareStep(unsigned int unI, unsigned int unJ,
 		unsigned int unHalfSpacing);
-	void SetColor(float fTmp);
+	void SetColor(float fTmp, float slope);
 	void Init();
 
 public:
@@ -47,9 +48,13 @@ public:
 	float getSpacing();
 	void Generate(float fLeftBottom = 0.0f, float fLeftTop = 0.0f,
 		float fRightTop = 0.0f, float fRightBottom = 0.0f);
-	void ChangeMode();
+	void ChangeModeFilled();
+	void ChangeModeLines();
+	void setVariance(float variance);
+
 
 	// Drawing
 public:
 	virtual void Draw();
+	float CalculateSlope(float hA, float hB, float hC, float hD, float dAB, float dBC);
 };
