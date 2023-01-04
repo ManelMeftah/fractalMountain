@@ -1,4 +1,4 @@
-#include "montagne.h" 
+#include "Montagne.h" 
 
 using namespace std;
 
@@ -11,7 +11,7 @@ using namespace std;
  *
  *   @param unSteps : puissance de 2 -> longeur = largeur =
  *  (2^unSteps+1)
- *   @param fVariability : controle de la variabilité de la hauteur
+ *   @param fVariability : controle de la variabilitï¿½ de la hauteur
  *   @param fSpacing : espace entre 2 points
  */
 Montagne::Montagne(unsigned int unSteps, float fVariability,
@@ -51,7 +51,7 @@ float Montagne::Randomize()
 
 /**
  *   Allocation de la memoire necessaire pour contenir la
- *  matrice representant les ordonnées
+ *  matrice representant les ordonnï¿½es
  *
  */
 void Montagne::Init()
@@ -334,11 +334,11 @@ void Montagne::Draw()
 	//glScalef(0.5f, 0.5f, 0.5f);
 	// Generate the appropriate boundaries 
 
-	// Activer l'éclairage
+	// Activer l'ï¿½clairage
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
-	// Définir les paramètres de la lumière
+	// Dï¿½finir les paramï¿½tres de la lumiï¿½re
 	GLfloat light_position[] = { 5.0f, 10.0f, 5.0f, 0.0f };
 	GLfloat light_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	GLfloat light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -365,7 +365,7 @@ void Montagne::Draw()
 
 			if (m_bShowLines)
 			{
-				glLineWidth(2.0);  // Épaisseur de 2 pixels
+				glLineWidth(2.0);  // ï¿½paisseur de 2 pixels
 				glBegin(GL_LINES);
 
 				glColor3f(0, 0, 0);
@@ -400,19 +400,19 @@ void Montagne::Draw()
 
 				fTmp = (m_vectPoints[unI][unJ] - m_fMin) / fDiff;
 				SetColor(fTmp, slope);
-				glVertex3f(fX, m_vectPoints[unI][unJ], fZ);
+				glVertex3f(fX, fZ, m_vectPoints[unI][unJ]);
 
 				fTmp = (m_vectPoints[unI + 1][unJ] - m_fMin) / fDiff;
 				SetColor(fTmp, slope);
-				glVertex3f(fX, m_vectPoints[unI + 1][unJ], fZ + m_fSpacing);
+				glVertex3f(fX, fZ + m_fSpacing,  m_vectPoints[unI + 1][unJ]);
 
 				fTmp = (m_vectPoints[unI + 1][unJ + 1] - m_fMin) / fDiff;
 				SetColor(fTmp, slope);
-				glVertex3f(fX + m_fSpacing, m_vectPoints[unI + 1][unJ + 1], fZ + m_fSpacing);
+				glVertex3f(fX + m_fSpacing, fZ + m_fSpacing,  m_vectPoints[unI + 1][unJ + 1]);
 
 				fTmp = (m_vectPoints[unI][unJ + 1] - m_fMin) / fDiff;
 				SetColor(fTmp, slope);
-				glVertex3f(fX + m_fSpacing, m_vectPoints[unI][unJ + 1], fZ);
+				glVertex3f(fX + m_fSpacing, fZ, m_vectPoints[unI][unJ + 1]);
 
 				glEnd();
 			}
@@ -444,7 +444,7 @@ void Montagne::Draw()
 
 float Montagne::CalculateSlope(float hA, float hB, float hC, float hD, float dAB, float dBC)
 {
-	// Calculer les pentes des différentes arêtes de la facette
+	// Calculer les pentes des diffï¿½rentes arï¿½tes de la facette
 	float slopeA = abs(hA - hB) / dAB;
 	float slopeB = abs(hB - hC) / dBC;
 	float slopeC = abs(hC - hD) / dAB;

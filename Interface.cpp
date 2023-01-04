@@ -31,12 +31,12 @@ void Interface::paint()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //gluLookAt(0.0 + m_fTX + m_fRX, 24.0 + m_fTY + m_fRY, 40.0 + m_fTZ + m_fRZ,  // position de la caméra
-    //    0.0 + m_fTX, 24.0 + m_fTY, 0.0 + m_fTZ,  // point vers lequel la caméra regarde
+    //gluLookAt(0.0 + m_fTX + m_fRX, 24.0 + m_fTY + m_fRY, 40.0 + m_fTZ + m_fRZ,  // position de la camï¿½ra
+    //    0.0 + m_fTX, 24.0 + m_fTY, 0.0 + m_fTZ,  // point vers lequel la camï¿½ra regarde
     //    0.0, 1.0, 0.0);  // vecteur "up"
 
-    gluLookAt(0.0 + m_fTX + m_fRX, 100.0 + m_fTY + m_fRY, 0.0 + m_fTZ + m_fRZ,  // position de la caméra
-        50.0 + m_fTX, 0.0 + m_fTY, 50.0 + m_fTZ,  // point vers lequel la caméra regarde
+    gluLookAt(0.0 + m_fTX + m_fRX, 100.0 + m_fTY + m_fRY, 0.0 + m_fTZ + m_fRZ,  // position de la camï¿½ra
+        50.0 + m_fTX, 0.0 + m_fTY, 50.0 + m_fTZ,  // point vers lequel la camï¿½ra regarde
         0.0, 1.0, 0.0);  // vecteur "up"
 
    /* gluLookAt(0.0 + m_fTX + m_fRX, 24.0 + m_fTY + m_fRY, 20.0 + m_fTZ + m_fRZ,
