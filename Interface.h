@@ -12,37 +12,25 @@ public:
     Interface();
     ~Interface();
 
-    virtual void initializeGL();
-    virtual void resizeGL(int width, int height);
     virtual void paint();
 
-    // Rotation
-    virtual void rotateMinusXSlot();
-    virtual void rotateMinusYSlot();
-    virtual void rotateMinusZSlot();
-    virtual void rotatePlusXSlot();
-    virtual void rotatePlusYSlot();
-    virtual void rotatePlusZSlot();
-
-    // Translation
-    virtual void translateMinusXSlot();
-    virtual void translateMinusYSlot();
-    virtual void translateMinusZSlot();
-    virtual void translatePlusXSlot();
-    virtual void translatePlusYSlot();
-    virtual void translatePlusZSlot();
-
     // Mode
-    virtual void changeMode();
+    virtual void changeModeF(); //filled
+    virtual void changeModeL(); //lines
 
 private:
-    Montagne* pEngine;
+    Montagne* maMontagne;
 
 public:
-    float m_fTX, m_fTY, m_fTZ;
-    float m_fRX, m_fRY, m_fRZ;
+    //Position de la camera:
+    float m_fTX, m_fTY, m_fTZ; //translation
+    float m_fRX, m_fRY, m_fRZ; //rotation
 
 public:
     void upVariance();
+    void decVariance();
     void generate(unsigned int unPower, float fVariability, float fSize);
+
+    Montagne* getMontagne();
+
 };

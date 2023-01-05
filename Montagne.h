@@ -14,42 +14,49 @@ class Montagne
 {
 	// Members
 private:
-	std::vector< std::vector<float> > m_vectPoints;  /**< Matrice de points */
-	unsigned int m_unSize;  /**< Largeur de la matrice */
-	float m_fVariability;  /**< Variabilite de la hauteur */
-	float m_fSpacing;  /**< Espace entre 2 points */
-	float m_fMin; /**< Hauteur maximale de la map */
-	float m_fMax; /**< Hauteur minimale de la map */
-	bool m_bFilled; /**< Booleen permettant de passer du mode
-					 * filaire en mode "rempli"
-					 */
+	std::vector< std::vector<float> > pointMatrix;  //Matrice de points generee par l'algorithme diamant-carré
+	unsigned int Size;  //Largeur de la matrice 
+	float Variability;  //Variabilite de la hauteur 
+	float Spacing;  // Espace entre 2 points 
+	float hMin; // Hauteur minimale de la map */
+	float hMax; // Hauteur maximale de la map */
+	//Booleens permettant de savoir si on est en mode filaire
+	bool isFilled; //Booleens permettant de savoir si on est en mode filaire
+	bool isShowLines;
 
 					 // Destruction / Construction
 public:
 	/* Montagne(void); */
-	Montagne(unsigned int unSteps,
-		float fVariability, float fSpacing);
+	Montagne(unsigned int pas,
+		float variance, float espacement);
 	virtual ~Montagne(void);
 
 	// Generation
 private:
 	float Randomize();
-	float DiamondStep(unsigned int unI, unsigned int unJ,
-		unsigned int unHalfSpacing);
-	float SquareStep(unsigned int unI, unsigned int unJ,
-		unsigned int unHalfSpacing);
-	void SetColor(float fTmp);
+	float DiamondStep(unsigned int i, unsigned int j,
+		unsigned int halfSpacing);
+	float SquareStep(unsigned int i, unsigned int j,
+		unsigned int halSpacing);
+	void SetColor(float tmpH, float slope);
 	void Init();
 
 public:
 	unsigned int getSize();
 	float getVariance();
 	float getSpacing();
-	void Generate(float fLeftBottom = 0.0f, float fLeftTop = 0.0f,
-		float fRightTop = 0.0f, float fRightBottom = 0.0f);
-	void ChangeMode();
+	void Generate(float LeftBottom = 0.0f, float LeftTop = 0.0f,
+		float RightTop = 0.0f, float RightBottom = 0.0f);
+
+	void DiamondSquare(unsigned int size, float variance);
+	void ChangeModeFilled();
+	void ChangeModeLines();
+	void setVariance(float variance);
+
 
 	// Drawing
 public:
 	virtual void Draw();
+	float CalculateSlope(float hA, float hB, float hC, float hD, float dAB, float dBC);
 };
+
