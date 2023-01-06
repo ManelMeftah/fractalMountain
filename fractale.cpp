@@ -52,7 +52,7 @@ void initOpenGl()
 
     //lumiere 
 
-    glClearColor(.5, .5, 0.5, 0.0);
+    //glClearColor(.5, .5, 0.5, 0.0);
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
@@ -62,19 +62,20 @@ void initOpenGl()
     glLightfv(GL_LIGHT0, GL_DIFFUSE, l_pos);
     glLightfv(GL_LIGHT0, GL_SPECULAR, l_pos);
 
-    // glDepthFunc(GL_LESS);
-    // glEnable(GL_DEPTH_TEST);
+     glDepthFunc(GL_LESS);
+     glEnable(GL_DEPTH_TEST);
     glEnable(GL_COLOR_MATERIAL);
 
     // Configurez la projection en perspective ici
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(30.0f, (GLfloat)200 / (GLfloat)200, 0.1f, 100.0f);
-
+    //gluPerspective(30.0f, (GLfloat)200 / (GLfloat)200, 0.1f, 100.0f);
+    //gluPerspective(30.0f, (GLfloat)200 / (GLfloat)200, 0.1f, 0.0f);
     // Configurez la vue de la caméra ici
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0, 50.0, 50.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+
 }
 
 //------------------------------------------------------
@@ -93,12 +94,12 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_RGB);
     glutInitWindowPosition(200, 200);
     glutInitWindowSize(600, 600);
-    glutCreateWindow("ifs");
+    glutCreateWindow("montagne fractale");
 
-    /* Initialisation d'OpenGL */
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glColor3f(1.0, 1.0, 1.0);
-    glPointSize(1.0);
+    ///* Initialisation d'OpenGL */
+    //glClearColor(0.0, 0.0, 0.0, 0.0);
+    //glColor3f(1.0, 1.0, 1.0);
+    //glPointSize(1.0);
 
     /* enregistrement des fonctions de rappel */
     glutDisplayFunc(affichage);
@@ -213,14 +214,15 @@ void mouseMotion(int x, int y)
 {
     if (mouseLeftDown)
     {
-        cameraAngleY += (x - mouseX);
-        cameraAngleX += (y - mouseY);
+        interface->m_fRX += (x - mouseX);
+        interface->m_fRY += (y - mouseY);
         mouseX = x;
         mouseY = y;
     }
     if (mouseRightDown)
     {
-        cameraDistance += (y - mouseY) * 0.2f;
+        interface->m_fTY += (y - mouseY) * 0.2f;
+        //cameraDistance += (y - mouseY) * 0.2f;
         mouseY = y;
     }
 

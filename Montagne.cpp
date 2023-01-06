@@ -59,9 +59,9 @@ void Montagne::Init()
 {
 	// Reserve the memory 
 	pointMatrix.resize(Size);
-	for (unsigned int unI = 0; unI < Size; unI++)
+	for (unsigned int i = 0; i < Size; i++)
 	{
-		pointMatrix[unI].resize(Size);
+		pointMatrix[i].resize(Size);
 	}
 }
 
@@ -151,37 +151,37 @@ void Montagne::DiamondSquare(unsigned int size, float variance)
 	{
 		for (unsigned int j = (i + half) % size; j < pointMatrix[i].size(); j += size)
 		{
-			float sum = 0.0;
+			float avg = 0.0;
 			int count = 0;
 
 			// Check if the points to the top left and bottom right of (i, j) are within the grid
 			if (i >= half && j >= half)
 			{
-				sum += pointMatrix[i - half][j - half];
+				avg += pointMatrix[i - half][j - half];
 				count++;
 			}
 			if (i + half < Size && j + half < Size)
 			{
-				sum += pointMatrix[i + half][j + half];
+				avg += pointMatrix[i + half][j + half];
 				count++;
 			}
 
 			// Check if the points to the top right and bottom left of (i, j) are within the grid
 			if (i >= half && j + half < Size)
 			{
-				sum += pointMatrix[i - half][j + half];
+				avg += pointMatrix[i - half][j + half];
 				count++;
 			}
 			if (i + half < Size && j >= half)
 			{
-				sum += pointMatrix[i + half][j - half];
+				avg += pointMatrix[i + half][j - half];
 				count++;
 			}
-			sum /= count;
+			avg /= count;
 			// Appliquer la perturbation
-			sum += Randomize() * variance * pow(2, -half);
+			avg += Randomize() * variance * pow(2, -half);
 			// Affecter la valeur au point central du diamant
-			pointMatrix[i][j] = sum;
+			pointMatrix[i][j] = avg;
 		}
 	}
 
@@ -321,16 +321,16 @@ void Montagne::DiamondSquare(unsigned int size, float variance)
 	// Find the min and the max of the map
 	hMax = pointMatrix[0][0];
 	hMin = pointMatrix[0][0];
-	for (unsigned int unI = 0; unI < (Size - 1); unI++)
-		for (unsigned int unJ = 0; unJ < (Size - 1); unJ++)
+	for (unsigned int i = 0; i < (Size - 1); i++)
+		for (unsigned int j = 0; j < (Size - 1); j++)
 		{
-			if (pointMatrix[unI][unJ] > hMax)
+			if (pointMatrix[i][j] > hMax)
 			{
-				hMax = pointMatrix[unI][unJ];
+				hMax = pointMatrix[i][j];
 			}
-			if (pointMatrix[unI][unJ] < hMin)
+			if (pointMatrix[i][j] < hMin)
 			{
-				hMin = pointMatrix[unI][unJ];
+				hMin = pointMatrix[i][j];
 			}
 		}
 
@@ -339,7 +339,7 @@ void Montagne::DiamondSquare(unsigned int size, float variance)
 }
 
 
-/*!
+/**
 * 	Lissage du terrain :
 * 		- on initialise une nouvelle matrice
 * 		- pour chaque point de l'ancienne matrice, on calcule la moyenne de ses points adjacents
@@ -381,18 +381,7 @@ void Montagne::Smooth()
 }
 
 
-/**
- *   Methode permettant d'adapter la couleur a la hauteur du
- *  point
- *		 - Si l'altitude est inférieure à 0.3, la couleur est bleue
- *		 - Si l'altitude est inférieure à 0.7, la couleur est marron ou verte (en fonction de l'altitude)
- *		 - Si l'altitude est supérieure à 0.7, la couleur est blanche (pour simuler la neige)
- *		 - Si la facette est oriente nord, on augmente la quantité de neigne
- *
- *   @param fTmp : hauteur du point
- *	 @param slope : pente du point
- *	 @param orientation : orientation de la facette, >0 : Nord, <0 : Sud
- */
+
 
 //void Montagne::SetColor(float fTmp, float slope, float orientation)
 //{
@@ -415,6 +404,19 @@ void Montagne::Smooth()
 //}
 //
 
+
+/**
+ *   Methode permettant d'adapter la couleur a la hauteur du
+ *  point
+ *		 - Si l'altitude est inférieure à 0.3, la couleur est bleue
+ *		 - Si l'altitude est inférieure à 0.7, la couleur est marron ou verte (en fonction de l'altitude)
+ *		 - Si l'altitude est supérieure à 0.7, la couleur est blanche (pour simuler la neige)
+ *		 - Si la facette est oriente nord, on augmente la quantité de neigne
+ *
+ *   @param fTmp : hauteur du point
+ *	 @param slope : pente du point
+ *	 @param orientation : orientation de la facette, >0 : Nord, <0 : Sud
+ */
 void Montagne::SetColor(float fTmp, float slope, float orientation)
 {
 	if (fTmp < 0.3)
@@ -430,11 +432,11 @@ void Montagne::SetColor(float fTmp, float slope, float orientation)
 	else
 	{
 		// Couleur blanche pour simuler la neige
-		float snow = 1.0 - slope;
+		float snow = 1.0;
 		// Si la facette est orientée vers le nord, augmenter la quantité de neige
-		if (orientation > 0)
+		if (orientation <= 0)
 		{
-			snow += 0.3;
+			snow = snow - slope;
 		}
 		glColor3f(snow, snow, snow);
 	}
@@ -463,12 +465,11 @@ void Montagne::ChangeModeLines()
  */
 void Montagne::Draw()
 {
-	//glScalef(0.5f, 0.5f, 0.5f);
 
-	// Activer l'éclairage
+	// Activer l'éclairage 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-
+	glEnable(GL_SPECULAR);
 	// Définir les paramètres de la lumière
 	GLfloat light_position[] = { 5.0f, 10.0f, 5.0f, 0.0f };
 	GLfloat light_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -479,22 +480,33 @@ void Montagne::Draw()
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 
-	// Generate the appropriate boundaries 
-	float fMax = Spacing * (Size / 2);
-	float fMin = -fMax;
-	float fTmp, fDiff;
+	// Définir les paramètres de la lumière spéculaire
+	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_shininess[] = { 50.0 };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
 
-	fDiff = hMax - hMin;
+
+	// Generate the appropriate boundaries 
+	// Initialisation des variables max et min qui représentent les limites de l'espace de dessin en abscisse et en ordonnée
+	float max = Spacing * (Size / 2);
+	float min = -max;
+	float tmp, diff;
+
+	diff = hMax - hMin; //différence entre les valeurs maximale et minimale de la hauteur de la montagne
 
 
 	// Drawing the map 
-	for (unsigned int unI = 0; unI < (Size - 1); unI++)
+	for (unsigned int i = 0; i < (Size - 1); i++)
 	{
-		float fZ = fMin + unI * Spacing;
-		for (unsigned int unJ = 0; unJ < (Size - 1); unJ++)
+		// Calcul de la coordonnée Z de la facette courante
+		float z = min + i * Spacing;
+		for (unsigned int j = 0; j < (Size - 1); j++)
 		{
-			float fX = fMin + unJ * Spacing;
+			// Calcul de la coordonnée X de la facette courante
+			float x = min + j * Spacing;
 
+			//Dessiner les lignes si elles doivent etre affichées
 			if (isShowLines)
 			{
 				glLineWidth(2.0);  // Épaisseur de 2 pixels
@@ -502,71 +514,76 @@ void Montagne::Draw()
 
 				glColor3f(0, 0, 0);
 
-				glVertex3f(fX, pointMatrix[unI][unJ], fZ);
-				glVertex3f(fX, pointMatrix[unI + 1][unJ], fZ + Spacing);
+				// Dessine les lignes de la facette courante
+				glVertex3f(x, pointMatrix[i][j], z);
+				glVertex3f(x, pointMatrix[i + 1][j], z + Spacing);
 
-				glVertex3f(fX, pointMatrix[unI + 1][unJ], fZ + Spacing);
-				glVertex3f(fX + Spacing, pointMatrix[unI + 1][unJ + 1], fZ + Spacing);
+				glVertex3f(x, pointMatrix[i + 1][j], z + Spacing);
+				glVertex3f(x + Spacing, pointMatrix[i + 1][j + 1], z + Spacing);
 
-				glVertex3f(fX + Spacing, pointMatrix[unI + 1][unJ + 1], fZ + Spacing);
-				glVertex3f(fX + Spacing, pointMatrix[unI][unJ + 1], fZ);
+				glVertex3f(x + Spacing, pointMatrix[i + 1][j + 1], z + Spacing);
+				glVertex3f(x + Spacing, pointMatrix[i][j + 1], z);
 
-				glVertex3f(fX + Spacing, pointMatrix[unI][unJ + 1], fZ);
-				glVertex3f(fX, pointMatrix[unI][unJ], fZ);
+				glVertex3f(x + Spacing, pointMatrix[i][j + 1], z);
+				glVertex3f(x, pointMatrix[i][j], z);
 
 				glEnd();
 			}
 			
-
+			// Remplissage
 			if (isFilled)
 			{
 				glBegin(GL_QUADS);
-				// Calculer la pente de la facette courante
-				float hA = pointMatrix[unI][unJ];
-				float hB = pointMatrix[unI + 1][unJ];
-				float hC = pointMatrix[unI + 1][unJ + 1];
-				float hD = pointMatrix[unI][unJ + 1];
+				// Calculer la pente et l'orientation de la facette courante
+				float hA = pointMatrix[i][j];
+				float hB = pointMatrix[i + 1][j];
+				float hC = pointMatrix[i + 1][j + 1];
+				float hD = pointMatrix[i][j + 1];
 				float dAB = Spacing;
 				float dBC = Spacing;
-				float slope = CalculateSlope(hA, hB, hC, hD, dAB, dBC);
 
+				float slope = CalculateSlope(hA, hB, hC, hD, dAB, dBC);
 				float orientation = CalculateOrientation(hA, hB, hC, hD);
 
-				fTmp = (pointMatrix[unI][unJ] - hMin) / fDiff; //normalize
-				SetColor(fTmp, slope, orientation);
-				glVertex3f(fX, pointMatrix[unI][unJ], fZ);
+				// Normalisation de la hauteur de chaque point de la facette
+				tmp = (pointMatrix[i][j] - hMin) / diff; 
+				//Appliquer la couleur au point et le dessiner 
+				SetColor(tmp, slope, orientation);
+				glVertex3f(x, pointMatrix[i][j], z);
 
-				fTmp = (pointMatrix[unI + 1][unJ] - hMin) / fDiff;
-				SetColor(fTmp, slope, orientation);
-				glVertex3f(fX, pointMatrix[unI + 1][unJ], fZ + Spacing);
+				// Répéter pour chaque point de la facette
+				tmp = (pointMatrix[i + 1][j] - hMin) / diff;
+				SetColor(tmp, slope, orientation);
+				glVertex3f(x, pointMatrix[i + 1][j], z + Spacing);
 
-				fTmp = (pointMatrix[unI + 1][unJ + 1] - hMin) / fDiff;
-				SetColor(fTmp, slope, orientation);
-				glVertex3f(fX + Spacing, pointMatrix[unI + 1][unJ + 1], fZ + Spacing);
+				tmp = (pointMatrix[i + 1][j + 1] - hMin) / diff;
+				SetColor(tmp, slope, orientation);
+				glVertex3f(x + Spacing, pointMatrix[i + 1][j + 1], z + Spacing);
 
-				fTmp = (pointMatrix[unI][unJ + 1] - hMin) / fDiff;
-				SetColor(fTmp, slope, orientation);
-				glVertex3f(fX + Spacing, pointMatrix[unI][unJ + 1], fZ);
+				tmp = (pointMatrix[i][j + 1] - hMin) / diff;
+				SetColor(tmp, slope, orientation);
+				glVertex3f(x + Spacing, pointMatrix[i][j + 1], z);
 
 				glEnd();
 			}
+			//Affichage en mode filaire uniquement
 			else
 			{
 				glBegin(GL_LINES);
 
 				glColor3f(0, 1.0, 0);
 
-				glVertex3f(fX, pointMatrix[unI][unJ], fZ);
-				glVertex3f(fX, pointMatrix[unI + 1][unJ], fZ + Spacing);
+				glVertex3f(x, pointMatrix[i][j], z);
+				glVertex3f(x, pointMatrix[i + 1][j], z + Spacing);
 
-				glVertex3f(fX, pointMatrix[unI + 1][unJ], fZ + Spacing);
-				glVertex3f(fX + Spacing, pointMatrix[unI + 1][unJ + 1], fZ + Spacing);
+				glVertex3f(x, pointMatrix[i + 1][j], z + Spacing);
+				glVertex3f(x + Spacing, pointMatrix[i + 1][j + 1], z + Spacing);
 
-				glVertex3f(fX + Spacing, pointMatrix[unI + 1][unJ + 1], fZ + Spacing);
-				glVertex3f(fX + Spacing, pointMatrix[unI][unJ + 1], fZ);
+				glVertex3f(x + Spacing, pointMatrix[i + 1][j + 1], z + Spacing);
+				glVertex3f(x + Spacing, pointMatrix[i][j + 1], z);
 
-				glVertex3f(fX + Spacing, pointMatrix[unI][unJ + 1], fZ);
-				glVertex3f(fX, pointMatrix[unI][unJ], fZ);
+				glVertex3f(x + Spacing, pointMatrix[i][j + 1], z);
+				glVertex3f(x, pointMatrix[i][j], z);
 
 				glEnd();
 			}

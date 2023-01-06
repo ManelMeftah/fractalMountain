@@ -9,9 +9,21 @@ Interface::Interface()
     maMontagne->DiamondSquare(maMontagne->getSize(), maMontagne->getVariance());
 
 
-    m_fTX = m_fTZ = 0.0f;
-    m_fTY = 0.0f;
-    m_fRX = m_fRY = m_fRZ = 0.0f;
+    //m_fTX = m_fTZ = -50.0f;
+    //m_fTY = -50.0f;
+    //m_fRX = m_fRY = m_fRZ = 0.0f;
+
+    m_fTX = -50.0f;
+    m_fTY = -10.0f;
+    m_fTZ = -20.0f;
+    m_fRX = 40.0f;
+    m_fRY = 0.0f;
+    m_fRZ = 0.0f;
+
+
+
+
+
 }
 
 /*!
@@ -35,7 +47,7 @@ void Interface::paint()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    gluLookAt(0.0 + m_fTX + m_fRX, 100.0 + m_fTY + m_fRY, 0.0 + m_fTZ + m_fRZ,  // position de la caméra
+    gluLookAt(0.0 + m_fTX + m_fRX, 50.0 + m_fTY + m_fRY, 0.0 + m_fTZ + m_fRZ,  // position de la caméra
         50.0 + m_fTX, 0.0 + m_fTY, 50.0 + m_fTZ,  // point vers lequel la caméra regarde
         0.0, 1.0, 0.0);  // vecteur "up"
 
