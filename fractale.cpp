@@ -18,11 +18,9 @@ using namespace std;
 void affichage(void);
 
 void clavier(unsigned char touche, int x, int y);
-void affiche_repere(void);
 
 void mouse(int, int, int, int);
 void mouseMotion(int, int);
-//void reshape(int,int);
 
 
 // variables globales pour OpenGL
@@ -79,25 +77,10 @@ void initOpenGl()
     gluLookAt(0.0, 50.0, 50.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
 
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-//    gluPerspective(45.0f, (GLfloat)200 / (GLfloat)200, 0.1f, 100.0f);
-//    glMatrixMode(GL_MODELVIEW);
-//    //glLoadIdentity();	
-////	glScalef(.7,.7,.7);
-//    gluLookAt(0., 0., 4., 0., 0., 0., 0., 1., 0.);
-//    //  glTranslatef(0.0,0.0,-5.0);
-//}
-
 //------------------------------------------------------
 void display(void)
 //----------------------------------------------------------------------------------
 {
-    //**********************************************************************
-    // AFAIRE
-    // Écrire la visualisation du maillage "ExMesh
-
-    //**********************************************************************
     interface->paint();
 
 }
@@ -130,27 +113,6 @@ int main(int argc, char** argv)
     return 0;
 }
 //------------------------------------------------------
-void affiche_repere(void)
-{
-    glBegin(GL_LINES);
-    glColor3f(1.0, 0.0, 0.0);
-    glVertex2f(0., 0.);
-    glVertex2f(1., 0.);
-    glEnd();
-
-    glBegin(GL_LINES);
-    glColor3f(0.0, 1.0, 0.0);
-    glVertex2f(0., 0.);
-    glVertex2f(0., 1.);
-    glEnd();
-    glBegin(GL_LINES);
-    glColor3f(0.0, 0.0, 1.0);
-    glVertex3f(0., 0., 0.);
-    glVertex3f(0., 0., 1.);
-    glEnd();
-}
-
-//-----------------------------------------------------
 
 
 
@@ -164,10 +126,6 @@ void affichage(void)
     glTranslatef(0, 0, cameraDistance);
     glRotatef(cameraAngleX, 1., 0., 0.);
     glRotatef(cameraAngleY, 0., 1., 0.);
-    //--------------------------------
-    affiche_repere();
-    //--------------------------------
-    //displayHalfEdge();
     //--------------------------------
     display();
 
@@ -185,16 +143,15 @@ void clavier(unsigned char touche, int x, int y)
 
     switch (touche)
     {
-    case '+':
+    case '+': //* incrémenter de la variance
         interface->upVariance();
         glutPostRedisplay();
         break;
-    case '-':
+    case '-': //* decrémenter la variance
         interface->decVariance();
         glutPostRedisplay();
         break;
     case 'f': //* affichage en mode fil de fer 
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         interface->changeModeF();
         glutPostRedisplay();
         break;
@@ -206,7 +163,7 @@ void clavier(unsigned char touche, int x, int y)
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
         glutPostRedisplay();
         break;
-    case 'l':
+    case 'l': //* Affichage en mode plein et fil de fer
         interface->changeModeL();
         break;
     case 'q': //*la touche 'q' permet de quitter le programme 

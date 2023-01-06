@@ -4,13 +4,13 @@
 Interface::Interface()
 {
     // DiamondSquare
-    maMontagne = new Montagne(6, 15.0f, 2.0f);
+    maMontagne = new Montagne(6, 1.0f, 2.0f);
     //maMontagne->Generate();
     maMontagne->DiamondSquare(maMontagne->getSize(), maMontagne->getVariance());
 
 
-    m_fTX = m_fTZ = -10.0f;
-    m_fTY = -5.0f;
+    m_fTX = m_fTZ = 0.0f;
+    m_fTY = 0.0f;
     m_fRX = m_fRY = m_fRZ = 0.0f;
 }
 
@@ -29,7 +29,7 @@ Interface::~Interface()
 
 void Interface::paint()
 {
-    glClearColor(0.4, 0.4, 1.0, 0.0);
+    glClearColor(0.4, 0.8, 1.0, 0.0);
     glClearDepth(1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -64,30 +64,20 @@ void Interface::changeModeL()
 
 
 void Interface::upVariance()
-{/*
-    float variance = pEngine->getVariance();
-    variance++;
-    generate(pEngine->getSize(), variance, pEngine->getSpacing());*/
-
-    getMontagne()->setVariance(maMontagne->getVariance() + 0.1f);
+{
+    getMontagne()->setVariance(maMontagne->getVariance() + 10.0f);
     //maMontagne->Generate();
     maMontagne->DiamondSquare(maMontagne->getSize(), maMontagne->getVariance());
     paint();
-    //glutPostRedisplay();
 }
 
 void Interface::decVariance()
-{/*
-    float variance = pEngine->getVariance();
-    variance++;
-    generate(pEngine->getSize(), variance, pEngine->getSpacing());*/
-
-    getMontagne()->setVariance(maMontagne->getVariance() - 0.1f);
+{
+    getMontagne()->setVariance(maMontagne->getVariance() - 10.0f);
     //maMontagne->Generate();
     maMontagne->DiamondSquare(maMontagne->getSize(), maMontagne->getVariance());
 
     paint();
-    //glutPostRedisplay();
 }
 
 void Interface::generate(unsigned int unPower, float fVariability,

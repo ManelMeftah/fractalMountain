@@ -1,9 +1,13 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+
 #include <vector>
 #include <cstdlib>
 #include <iostream>
 #include <GL/glut.h>
+#include <algorithm>
+#include <cmath>
 
 /**
  *   Classe permettant de generer une montagne aleatoire en
@@ -34,21 +38,15 @@ public:
 	// Generation
 private:
 	float Randomize();
-	float DiamondStep(unsigned int i, unsigned int j,
-		unsigned int halfSpacing);
-	float SquareStep(unsigned int i, unsigned int j,
-		unsigned int halSpacing);
-	void SetColor(float tmpH, float slope);
+	void SetColor(float tmpH, float slope, float orientation);
 	void Init();
 
 public:
 	unsigned int getSize();
 	float getVariance();
 	float getSpacing();
-	void Generate(float LeftBottom = 0.0f, float LeftTop = 0.0f,
-		float RightTop = 0.0f, float RightBottom = 0.0f);
-
-	void DiamondSquare(unsigned int size, float variance);
+	void DiamondSquare(unsigned int size, float variance);	
+	void Smooth();
 	void ChangeModeFilled();
 	void ChangeModeLines();
 	void setVariance(float variance);
@@ -58,5 +56,6 @@ public:
 public:
 	virtual void Draw();
 	float CalculateSlope(float hA, float hB, float hC, float hD, float dAB, float dBC);
+	float CalculateOrientation(float hA, float hB, float hC, float hD);
 };
 

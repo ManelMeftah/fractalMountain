@@ -1,5 +1,5 @@
 #include "Montagne.h" 
-
+#include <algorithm>
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////////////// 
@@ -41,12 +41,13 @@ Montagne::~Montagne(void)
 /**
  *   Generation d'un nombre aleatoire
  *
- *   @return le nombre aleatoire genere
+ *   @return un nombre aleatoir entre -1 et 1
  */
 float Montagne::Randomize()
 {
-	const int limit = 1000000;
-	return static_cast<float>((rand() % limit)) / limit;
+	/*const int limit = 1;
+	return static_cast<float>((rand() % limit)) / limit;*/
+	return (2.0 * rand()) / RAND_MAX - 1.0;
 }
 
 /**
@@ -74,131 +75,15 @@ float Montagne::getVariance()
 	return Variability;
 }
 
+
+void Montagne::setVariance(float variance)
+{
+	this->Variability = variance;
+}
+
 float Montagne::getSpacing()
 {
 	return Spacing;
-}
-
-
-/**
- *   Phase du "diamant" : on se positionne sur le centre du
- *  carre precedemment obtenu(unI, unJ), puis on genere une
- *  valeur moyenne pour le centre des 4 nouveaux diamants
- *  obtenus
- *
- *   @param unI : abscisse du centre
- *   @param unJ : ordonnee du centre
- *   @param unHalfSpacing : "largeur" d'un diamant interne
- */
-//float Montagne::DiamondStep(unsigned int unI, unsigned int unJ, unsigned int unHalfSpacing)
-//{
-//	float sum = 0.0;
-//	int n = 0;
-//
-//	if ((unI >= unHalfSpacing) &&
-//		(unJ >= unHalfSpacing))
-//	{
-//		sum += pointMatrix[unI - unHalfSpacing][unJ - unHalfSpacing];
-//		n++;
-//	}
-//
-//	if ((unI >= unHalfSpacing) &&
-//		(unJ + unHalfSpacing < Size))
-//	{
-//		sum += pointMatrix[unI - unHalfSpacing][unJ + unHalfSpacing];
-//		n++;
-//	}
-//
-//	if ((unI + unHalfSpacing < Size) &&
-//		(unJ >= unHalfSpacing))
-//	{
-//		sum += pointMatrix[unI + unHalfSpacing][unJ - unHalfSpacing];
-//		n++;
-//	}
-//
-//	if ((unI + unHalfSpacing < Size) &&
-//		(unJ + unHalfSpacing < Size))
-//	{
-//		sum += pointMatrix[unI + unHalfSpacing][unJ + unHalfSpacing];
-//		n++;
-//	}
-//
-//	return sum / n;
-//}
-
-float Montagne::DiamondStep(unsigned int i, unsigned int j, unsigned int halfSpacing)
-{
-	float sum = 0.0;
-	int count = 0;
-
-	// Check if the points to the top left and bottom right of (i, j) are within the grid
-	if (i >= halfSpacing && j >= halfSpacing)
-	{
-		sum += pointMatrix[i - halfSpacing][j - halfSpacing];
-		count++;
-	}
-	if (i + halfSpacing < Size && j + halfSpacing < Size)
-	{
-		sum += pointMatrix[i + halfSpacing][j + halfSpacing];
-		count++;
-	}
-
-	// Check if the points to the top right and bottom left of (i, j) are within the grid
-	if (i >= halfSpacing && j + halfSpacing < Size)
-	{
-		sum += pointMatrix[i - halfSpacing][j + halfSpacing];
-		count++;
-	}
-	if (i + halfSpacing < Size && j >= halfSpacing)
-	{
-		sum += pointMatrix[i + halfSpacing][j - halfSpacing];
-		count++;
-	}
-
-	return sum / count;
-}
-
-
-/**
- *    Phase du "carre" : on se positionne sur le centre du
- *  diamant precedemment obtenu(unI, unJ), puis on genere une
- *  valeur moyenne pour le centre des 4 nouveaux carres
- *  obtenus
- *
- *   @param unI : abscisse du centre
- *   @param unJ : ordonnee du centre
- *   @param unHalfSpacing : "largeur" d'un carre interne
- */
-float Montagne::SquareStep(unsigned int unI, unsigned int unJ, unsigned int unHalfSpacing)
-{
-	float sum = 0.0;
-	int n = 0;
-
-	if (unI >= unHalfSpacing)
-	{
-		sum += pointMatrix[unI - unHalfSpacing][unJ];
-		n++;
-	}
-
-	if (unI + unHalfSpacing < Size)
-	{
-		sum += pointMatrix[unI + unHalfSpacing][unJ];
-		n++;
-	}
-
-	if (unJ >= unHalfSpacing)
-	{
-		sum += pointMatrix[unI][unJ - unHalfSpacing];
-		n++;
-	}
-
-	if (unJ + unHalfSpacing < Size)
-	{
-		sum += pointMatrix[unI][unJ + unHalfSpacing];
-		n++;
-	}
-
-	return sum / n;
 }
 
 
@@ -206,141 +91,233 @@ float Montagne::SquareStep(unsigned int unI, unsigned int unJ, unsigned int unHa
 ///////////////////////////////////////////////////////////////////////////////////////// 
 ///// Generation / Affichage 
 ///////////////////////////////////////////////////////////////////////////////////////// 
-/*!
- *   Generation du terrain aleatoire :
- *      - on reserve la memoire
- *      - on se place une hauteur pour les coins
- *      - on applique l'algorithme "Diamond-Square"
- *
- *   @param fLeftBottom : hauteur du coin inferieur gauche
- *   @param fLeftTop : hauteur du coin superieur gauche
- *   @param fRightTop : hauteur du coin superieur droit
- *   @param fRightBottom : hauteur du coin inferieur droit
- */
-void Montagne::Generate(float fLeftBottom, float fLeftTop,
-	float fRightTop, float fRightBottom)
-{
-	// Reserve memory 
-	Init();
-
-	// Init corners 
-	pointMatrix[0][0] = fLeftBottom;
-	pointMatrix[0][Size - 1] = fRightBottom;
-	pointMatrix[Size - 1][0] = fLeftTop;
-	pointMatrix[Size - 1][Size - 1] = fRightTop;
-
-	// Init spacing value 
-	unsigned int unSpacing = Size - 1;
-
-	while (unSpacing > 1)
-	{
-		int unHalfSpacing = unSpacing / 2;
-
-		// Make the Diamond Step 
-		for (unsigned int unI = unHalfSpacing; unI < Size; unI += unSpacing)
-		{
-			for (unsigned int unJ = unHalfSpacing; unJ < Size; unJ += unSpacing)
-			{
-				pointMatrix[unI][unJ] = DiamondStep(unI, unJ, unHalfSpacing) + Randomize() * unSpacing * Variability;
-			}
-		}
-
-		// Make the Square Step 
-		for (unsigned int unI = 0; unI < Size; unI += unHalfSpacing)
-		{
-			unsigned int unJStart = ((unI / unHalfSpacing) % 2 == 0) ? unHalfSpacing : 0;
-
-			for (unsigned int unJ = unJStart; unJ < Size; unJ += unSpacing)
-			{
-				pointMatrix[unI][unJ] = SquareStep(unI, unJ, unHalfSpacing) + Randomize() * unSpacing * Variability;
-			}
-		}
-
-		// Divide the used map by 2 
-		unSpacing = unHalfSpacing;
-
-	}
-
-	// Find the min and the max of the map
-	hMax = pointMatrix[0][0];
-	hMin = pointMatrix[0][0];
-	for (unsigned int unI = 0; unI < (Size - 1); unI++)
-		for (unsigned int unJ = 0; unJ < (Size - 1); unJ++)
-		{
-			if (pointMatrix[unI][unJ] > hMax)
-			{
-				hMax = pointMatrix[unI][unJ];
-			}
-			if (pointMatrix[unI][unJ] < hMin)
-			{
-				hMin = pointMatrix[unI][unJ];
-			}
-		}
-}
 
 
+/**
+* Generation du terrain aleatoire en utilisant l'algorithme Diamond-Square :
+*		- on reserve la memoire de la matrice
+*		- on initialise les coins de la matrice avec une hauteur nulle
+*		- on initialise les coins de la matrice avec une hauteur nulle
+*		- on applique l'algorithme récursivement en divisant la taille par 2 à chaque étape jusqu'à ce que la taille atteigne 1
+*		- pour chaque point du carré, on calcule la moyenne des 4 points de coin et on lui applique une perturbation aléatoire
+*		- pour chaque point du diamant, on calcule la moyenne des 4 points adjacents et on lui applique une perturbation aléatoire
+*		- on utilise une variable "variance" pour contrôler l'amplitude de la perturbation aléatoire
+* 
+*	 @param size : taille de la matrice
+*	@param variance : amplitide de la perturbation aléatoire
+*/
 void Montagne::DiamondSquare(unsigned int size, float variance)
 {
 	// Reserve memory 
 	Init();
 
 	// Init corners 
-	pointMatrix[0][0] = 0.0;
-	pointMatrix[0][Size - 1] = 0.0;
-	pointMatrix[Size - 1][0] = 0.0;
-	pointMatrix[Size - 1][Size - 1] = 0.0;
+	pointMatrix[0][0] = 0.0f;
+	pointMatrix[0][Size - 1] = 0.0f;
+	pointMatrix[Size - 1][0] = 0.0f;
+	pointMatrix[Size - 1][Size - 1] = 0.0f;
 
 	if (size == 1)
 	{
 		// Cas de base : on a atteint une taille de 1, on ne peut plus continuer
+		
 		return;
 	}
 
-	// Calcul du pas (demi-taille du diamant/carré)
-	unsigned int halfSpacing = size / 2;
+	// Calculer la moitié de la distance entre les points
+	int half = size / 2;
 
-	// Phase du diamant
-	for (unsigned int i = halfSpacing; i < pointMatrix.size() - halfSpacing; i += size)
+	// Pour chaque point du carré
+	for (unsigned int x = half; x < pointMatrix.size() - half; x += size)
 	{
-		for (unsigned int j = halfSpacing; j < pointMatrix[i].size() - halfSpacing; j += size)
+		for (unsigned int y = half; y < pointMatrix[x].size() - half; y += size)
 		{
-			float sum = pointMatrix[i - halfSpacing][j - halfSpacing] + pointMatrix[i - halfSpacing][j + halfSpacing] +
-				pointMatrix[i + halfSpacing][j - halfSpacing] + pointMatrix[i + halfSpacing][j + halfSpacing];
-			pointMatrix[i][j] = sum / 4 - variance * (Randomize() * 2 - 1);
+			// Calculer la moyenne des 4 points de coin du carré
+			float avg = (pointMatrix[x - half][y - half] +
+						 pointMatrix[x - half][y + half] + 
+						 pointMatrix[x + half][y - half] +
+						 pointMatrix[x + half][y + half]) / 4.0;
+			// Appliquer la perturbation
+			avg += Randomize() * variance * pow(2, -half);
+			// Affecter la valeur au point central du carré
+			pointMatrix[x][y] = avg;
+		}
+	}
+	
+	//METHODE 3
+
+	// Pour chaque point du diamant
+	for (unsigned int i = 0; i < pointMatrix.size(); i += half)
+	{
+		for (unsigned int j = (i + half) % size; j < pointMatrix[i].size(); j += size)
+		{
+			float sum = 0.0;
+			int count = 0;
+
+			// Check if the points to the top left and bottom right of (i, j) are within the grid
+			if (i >= half && j >= half)
+			{
+				sum += pointMatrix[i - half][j - half];
+				count++;
+			}
+			if (i + half < Size && j + half < Size)
+			{
+				sum += pointMatrix[i + half][j + half];
+				count++;
+			}
+
+			// Check if the points to the top right and bottom left of (i, j) are within the grid
+			if (i >= half && j + half < Size)
+			{
+				sum += pointMatrix[i - half][j + half];
+				count++;
+			}
+			if (i + half < Size && j >= half)
+			{
+				sum += pointMatrix[i + half][j - half];
+				count++;
+			}
+			sum /= count;
+			// Appliquer la perturbation
+			sum += Randomize() * variance * pow(2, -half);
+			// Affecter la valeur au point central du diamant
+			pointMatrix[i][j] = sum;
 		}
 	}
 
-	// Phase du carré
-	for (unsigned int i = 0; i < pointMatrix.size(); i += halfSpacing)
-	{
-		for (unsigned int j = (i + halfSpacing) % size; j < pointMatrix[i].size(); j += size)
-		{
-			float sum = 0;
-			int n = 0;
-			if (i >= halfSpacing)
-			{
-				sum += pointMatrix[i - halfSpacing][j];
-				n++;
-			}
-			if (i + halfSpacing < pointMatrix.size())
-			{
-				sum += pointMatrix[i + halfSpacing][j];
-				n++;
-			}
-			if (j >= halfSpacing)
-			{
-				sum += pointMatrix[i][j - halfSpacing];
-				n++;
-			}
-			if (j + halfSpacing < pointMatrix[i].size())
-			{
-				sum += pointMatrix[i][j + halfSpacing];
-				n++;
-			}
-			pointMatrix[i][j] = sum / n - variance * (Randomize() * 2 - 1);
-		}
-	}
+	//METHODE 2
 
+	//// Pour chaque point du diamant
+	//for (unsigned int x = 0; x < pointMatrix.size(); x += half)
+	//{
+	//	for (unsigned int y = (x + half) % size; y < pointMatrix[x].size(); y += size)
+	//	{
+	//		// Vérifier que les indices sont bien compris entre 0 et la taille de la matrice - 1
+	//		if (x < half || y < half || x >= pointMatrix.size() - half || y >= pointMatrix[x].size() - half)
+	//		{
+	//			// Si l'un des indices est hors de la matrice, on utilise la valeur du bord de la matrice
+	//			pointMatrix[x][y] = pointMatrix[std::min<unsigned int>(int(pointMatrix.size() - 1), std::max<unsigned int>(0, x))]
+	//										   [std::min<unsigned int>(int(pointMatrix[x].size() - 1), std::max<unsigned int>(0, y))];
+	//		}
+	//		else
+	//		{
+	//			// Calculer la moyenne des 4 points de coin du diamant
+	//			float avg = 0.0;
+	//			int count = 0;
+	//			if (x - half >= 0)
+	//			{
+	//				avg += pointMatrix[x - half][y];
+	//				count++;
+	//			}
+	//			if (x + half < pointMatrix.size())
+	//			{
+	//				avg += pointMatrix[x + half][y];
+	//				count++;
+	//			}
+	//			if (y - half >= 0)
+	//			{
+	//				avg += pointMatrix[x][y - half];
+	//				count++;
+	//			}
+	//			if (y + half < pointMatrix[x].size())
+	//			{
+	//				avg += pointMatrix[x][y + half];
+	//				count++;
+	//			}
+	//			avg /= count;
+	//			// Appliquer la perturbation
+	//			avg += Randomize() * variance * pow(2, -half);
+	//			// Affecter la valeur au point central du diamant
+	//			pointMatrix[x][y] = avg;
+	//		}
+	//	}
+	//}
+
+	//METHODE 1
+
+	// Pour chaque point du diamant
+	//for (unsigned int x = 0; x < pointMatrix.size(); x += half)
+	//{
+	//	for (unsigned int y = (x + half) % size; y < pointMatrix[x].size(); y += size)
+	//	{
+	//		// Vérifier que les indices sont bien compris entre 0 et la taille de la matrice - 1
+	//		int newX = x;
+	//		int newY = y;
+	//		if (newX < 0)
+	//		{
+	//			newX = pointMatrix.size() - 1;
+	//		}
+	//		else if (newX >= pointMatrix.size())
+	//		{
+	//			newX = 0;
+	//		}
+	//		if (newY < 0)
+	//		{
+	//			newY = pointMatrix[x].size() - 1;
+	//		}
+	//		else if (newY >= pointMatrix[x].size())
+	//		{
+	//			newY = 0;
+	//		}
+	//		// Calculer la moyenne des 4 points de coin du diamant
+	//		float avg = 0.0;
+	//		int count = 0;
+	//		if (newX - half >= 0)
+	//		{
+	//			avg += pointMatrix[newX - half][newY];
+	//			count++;
+	//		}
+	//		if (newX + half < pointMatrix.size())
+	//		{
+	//			avg += pointMatrix[newX + half][newY];
+	//			count++;
+	//		}
+	//		if (newY - half >= 0)
+	//		{
+	//			avg += pointMatrix[newX][newY - half];
+	//			count++;
+	//		}
+	//		if (newY + half < pointMatrix[newX].size())
+	//		{
+	//			avg += pointMatrix[newX][newY + half];
+	//			count++;
+	//		}
+	//		avg /= count;
+	//		// Appliquer la perturbation
+	//		avg += Randomize() * variance * pow(2, -half);
+	//		// Affecter la valeur au point central du diamant
+	//		pointMatrix[newX][newY] = avg;
+	//	}
+	//}
+
+
+	//FILTRE GAUSSIEN
+	
+	//// Appliquer le filtre Gaussien
+	//for (unsigned int x = 0; x < pointMatrix.size(); x++)
+	//{
+	//	for (unsigned int y = 0; y < pointMatrix[x].size(); y++)
+	//	{
+	//		float sum = 0.0;
+	//		int count = 0;
+	//		for (int i = -1; i <= 1; i++)
+	//		{
+	//			for (int j = -1; j <= 1; j++)
+	//			{
+	//				if (x + i < 0 || x + i >= pointMatrix.size() || y + j < 0 || y + j >= pointMatrix[x].size())
+	//				{
+	//					continue;
+	//				}
+	//				sum += pointMatrix[x + i][y + j];
+	//				count++;
+	//			}
+	//		}
+	//		pointMatrix[x][y] = sum / count;
+	//	}
+	//}
+
+
+	Smooth();
 	// Find the min and the max of the map
 	hMax = pointMatrix[0][0];
 	hMin = pointMatrix[0][0];
@@ -362,15 +339,83 @@ void Montagne::DiamondSquare(unsigned int size, float variance)
 }
 
 
+/*!
+* 	Lissage du terrain :
+* 		- on initialise une nouvelle matrice
+* 		- pour chaque point de l'ancienne matrice, on calcule la moyenne de ses points adjacents
+* 		- on remplace l'ancienne matrice par la nouvelle
+*/
+void Montagne::Smooth()
+{
+	// Initialiser la nouvelle matrice 
+	std::vector<std::vector<float>> newPointMatrix(pointMatrix.size(), std::vector<float>(pointMatrix[0].size()));
+	
+	// Pour chaque point de la matrice
+	for (unsigned int x = 0; x < pointMatrix.size(); x++)
+	{
+		for (unsigned int y = 0; y < pointMatrix[x].size(); y++)
+		{
+			float sum = 0.0;
+			int count = 0;
+
+			// Pour chaque point adjacent à (x, y)
+			for (int i = -1; i <= 1; i++)
+			{
+				for (int j = -1; j <= 1; j++)
+				{
+					// Vérifier que les indices (x + i, y + j) sont bien compris entre 0 et la taille de la matrice - 1
+					if (x + i >= 0 && x + i < pointMatrix.size() && y + j >= 0 && y + j < pointMatrix[x].size())
+					{
+						sum += pointMatrix[x + i][y + j];
+						count++;
+					}
+				}
+			}
+			// Calculer la moyenne des points adjacents
+			newPointMatrix[x][y] = sum / count;
+		}
+	}
+
+	// Remplacer l'ancienne matrice par la nouvelle
+	pointMatrix = newPointMatrix;
+}
+
 
 /**
  *   Methode permettant d'adapter la couleur a la hauteur du
  *  point
+ *		 - Si l'altitude est inférieure à 0.3, la couleur est bleue
+ *		 - Si l'altitude est inférieure à 0.7, la couleur est marron ou verte (en fonction de l'altitude)
+ *		 - Si l'altitude est supérieure à 0.7, la couleur est blanche (pour simuler la neige)
+ *		 - Si la facette est oriente nord, on augmente la quantité de neigne
  *
- *   @param fTmp : hauteur temporaire
+ *   @param fTmp : hauteur du point
+ *	 @param slope : pente du point
+ *	 @param orientation : orientation de la facette, >0 : Nord, <0 : Sud
  */
 
-void Montagne::SetColor(float fTmp, float slope)
+//void Montagne::SetColor(float fTmp, float slope, float orientation)
+//{
+//	if (fTmp < 0.3)
+//	{
+//		// Partie basse de la montagne: couleur bleue
+//		glColor3f(0, 0, fTmp);
+//	}
+//	else if (fTmp < 0.7)
+//	{
+//		// Partie haute de la montagne: couleur marron ou verte
+//		glColor3f(fTmp, fTmp / 6, 0);
+//	}
+//	else
+//	{
+//		// Couleur blanche pour simuler la neige
+//		float snow = 1.0 - slope;
+//		glColor3f(snow, snow, snow);
+//	}
+//}
+//
+
+void Montagne::SetColor(float fTmp, float slope, float orientation)
 {
 	if (fTmp < 0.3)
 	{
@@ -380,24 +425,20 @@ void Montagne::SetColor(float fTmp, float slope)
 	else if (fTmp < 0.7)
 	{
 		// Partie haute de la montagne: couleur marron ou verte
-		glColor3f(fTmp, fTmp / 6, 0);
+		glColor3f(fTmp, fTmp / 6, fTmp/3);
 	}
 	else
 	{
 		// Couleur blanche pour simuler la neige
 		float snow = 1.0 - slope;
+		// Si la facette est orientée vers le nord, augmenter la quantité de neige
+		if (orientation > 0)
+		{
+			snow += 0.3;
+		}
 		glColor3f(snow, snow, snow);
 	}
 }
-
-
-
-
-void Montagne::setVariance(float variance)
-{
-	this->Variability = variance;
-}
-
 
 /**
  *   Methode permettant d'alterner entre fil de fer et mode
@@ -489,20 +530,22 @@ void Montagne::Draw()
 				float dBC = Spacing;
 				float slope = CalculateSlope(hA, hB, hC, hD, dAB, dBC);
 
+				float orientation = CalculateOrientation(hA, hB, hC, hD);
+
 				fTmp = (pointMatrix[unI][unJ] - hMin) / fDiff; //normalize
-				SetColor(fTmp, slope);
+				SetColor(fTmp, slope, orientation);
 				glVertex3f(fX, pointMatrix[unI][unJ], fZ);
 
 				fTmp = (pointMatrix[unI + 1][unJ] - hMin) / fDiff;
-				SetColor(fTmp, slope);
+				SetColor(fTmp, slope, orientation);
 				glVertex3f(fX, pointMatrix[unI + 1][unJ], fZ + Spacing);
 
 				fTmp = (pointMatrix[unI + 1][unJ + 1] - hMin) / fDiff;
-				SetColor(fTmp, slope);
+				SetColor(fTmp, slope, orientation);
 				glVertex3f(fX + Spacing, pointMatrix[unI + 1][unJ + 1], fZ + Spacing);
 
 				fTmp = (pointMatrix[unI][unJ + 1] - hMin) / fDiff;
-				SetColor(fTmp, slope);
+				SetColor(fTmp, slope, orientation);
 				glVertex3f(fX + Spacing, pointMatrix[unI][unJ + 1], fZ);
 
 				glEnd();
@@ -533,6 +576,16 @@ void Montagne::Draw()
 
 }
 
+/**
+* Calcul de la pente de la facette ABCD
+*	@param hA : hauteur du point A de la facette
+*	@param hB : hauteur du point B de la facette
+*	@param hC : hauteur du point C de la facette
+*	@param hD : hauteur du point D de la facette
+*	@param dAB : distance entre le point A et le point B
+*	@param dBC : distance entre le point B et le point C 
+*/
+
 float Montagne::CalculateSlope(float hA, float hB, float hC, float hD, float dAB, float dBC)
 {
 	// Calculer les pentes des différentes arêtes de la facette
@@ -542,4 +595,28 @@ float Montagne::CalculateSlope(float hA, float hB, float hC, float hD, float dAB
 	float slopeD = abs(hD - hA) / dBC;
 	// Calculer la pente moyenne de la facette
 	return (slopeA + slopeB + slopeC + slopeD) / 4.0;
+}
+
+float Montagne::CalculateOrientation(float hA, float hB, float hC, float hD)
+{
+	// Calculer les pentes des différentes aretes de la facette
+	float slopeAB = hB - hA;
+	float slopeBC = hC - hB;
+	float slopeCD = hD - hC;
+	float slopeDA = hA - hD;
+
+	// Calculer l'orientation de la facette en utilisant la pente des arêtes
+	float orientation = atan2(slopeAB, slopeDA) - atan2(slopeCD, slopeBC);
+
+	// Normaliser l'orientation entre 0 et 2pi
+	while (orientation < 0)
+	{
+		orientation += 2 * M_PI;
+	}
+	while (orientation >= 2 * M_PI)
+	{
+		orientation -= 2 * M_PI;
+	}
+
+	return orientation;
 }
